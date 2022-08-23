@@ -3,6 +3,7 @@ const router = express.Router();
 const controller = require("../controller/activity-controller");
 
 router.get("/", controller.getAllActivities);
+router.get("/month", controller.getAllActivitiesThisMonth);
 
 router.get("/:activityId", controller.getActivityById);
 

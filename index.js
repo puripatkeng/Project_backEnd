@@ -1,25 +1,48 @@
 require("dotenv").config();
-const cors = require('cors');
+const cors = require("cors");
 const express = require("express");
 const app = express();
-const activityRouter = require("./src/route/route");
+
 const bodyParser = require("body-parser");
 const controllerMongoose = require("./src/controller/mongoose-controller");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const routerIndex = require("./routerIndex");
+app.use(cookieParser());
+
+
+
+const oneDay = 1000 * 60 * 60 * 24;
+app.use(
+  session({
+    secret: "asdjfklasdjklfjasldkjflkjlkasjlkfjldkasjflkajlskdf",
+    saveUninitialized: true,
+    cookie: { maxAge: oneDay },
+    resave: false,
+  })
+);
+
+
 const corsOptions = {
-  origin: 'http://127.0.0.1:5173/',
-  optionsSuccessStatus: 200 ,
+  origin: "*",
+  optionsSuccessStatus: 200,
   credentials: true,
 };
 
+app.use(cors());
 
-app.use(cors(corsOptions));
+app.get("/", (req, res, next) => {
+  res.send(req.cookies);
+});
+
+const authSession = require("./src/middlewares/authSession");
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 app.use(controllerMongoose.connectMongoose);
+app.use(routerIndex)
 
-app.use("/activities", activityRouter);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is listening on port ${process.env.PORT}`);

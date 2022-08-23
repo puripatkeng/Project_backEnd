@@ -1,13 +1,42 @@
 const Activities = require("../model/activityModel");
 
 exports.getAllActivities = async (req, res, next) => {
-  const activities = await Activities.find();
-  res.header("Access-Control-Allow-Origin", "*");
-  res.send(activities);
+  try {
+    let query = Activities.find().sort({ _id: -1 });
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * pageSize;
+    const total = await Activities.countDocuments();
+    const pages = Math.ceil(total / pageSize);
+
+    query = query.skip(skip).limit(pageSize);
+    if (page > pages) {
+      return res.status(404).json({
+        message: "No page found",
+      });
+    }
+
+    const result = await query;
+
+    res.status(200).json({
+      status: "success",
+      page,
+      per_page: result.length,
+      total,
+      total_page: pages,
+      activities: result,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: "Server Error",
+    });
+  }
 };
 
 exports.getActivityById = async (req, res, next) => {
-  console.log("GET data from", req.params);
+  // console.log("GET data from", req.params);
 
   try {
     const activity = await Activities.findById(req.params.activityId)
@@ -46,6 +75,7 @@ exports.editActivity = async (req, res) => {
 
   try {
     const uid = req.params.activityId;
+    console.log(uid);
     const activity = await Activities.updateOne(
       { _id: uid },
       { $set: req.body }
@@ -63,10 +93,71 @@ exports.editActivity = async (req, res) => {
 };
 
 exports.deleteActivity = async (req, res, next) => {
-  const uid = req.params.activityId;
-  const activity = await Activities.deleteOne({ _id: uid });
-  if (!activity) {
-    res.status(404).send("Activity not exists");
+  try {
+    const uid = req.params.activityId;
+    console.log(uid);
+    const activity = await Activities.deleteOne({ _id: uid });
+    if (!activity) {
+      throw new Error("Activity not exists");
+    }
+    res.status(200).send(`activity id: ${uid} is deleted`);
+  } catch (error) {
+    res.status(404).send(`${error}`);
   }
-  res.status(200).send(`activity id: ${uid} is deleted`);
+};
+const currentTime = new Date();
+const day = new Date(currentTime).getDate();
+const month = new Date(currentTime).getMonth() + 1; // month is 0-11
+const year = new Date(currentTime).getFullYear();
+
+const formatDate = (month) => {
+  if (month < 10) {
+    return `0${month}`;
+  }
+  return `${month}`;
+};
+const thisMonth = `${year},${formatDate(month)}`;
+
+exports.getAllActivitiesThisMonth = async (req, res, next) => {
+  try {
+    const { page:reqPage, limit } = req.query;
+
+    let query = Activities.find({
+      date: { $lt: new Date(), $gt: new Date(thisMonth) },
+    }).sort({ _id: -1 });
+
+    const total = await Activities.countDocuments();
+
+    const page = parseInt(reqPage) || 1;
+    const pageSize = parseInt(limit) || 10;
+    const skip = (page - 1) * pageSize;
+    const pages = Math.ceil(total / pageSize);
+
+    query = query.skip(skip).limit(pageSize);
+
+    if (page > pages) {
+      return res.status(404).json({
+        message: "No page found",
+      });
+    }
+
+    const result = await query;
+
+    const response = {
+      status: "success",
+      page,
+      per_page: result.length,
+      total,
+      total_page: pages,
+      activities: result,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: "Server Error",
+    });
+  }
 };
