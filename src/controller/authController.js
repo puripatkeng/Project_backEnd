@@ -13,7 +13,7 @@ const signIn = async (req, res) => {
         const token = jwt.sign(
           {
             userId: user.id,
-            name: user.name,
+            // name: user.name,
             username: user.username,
           },
           "qwerty"

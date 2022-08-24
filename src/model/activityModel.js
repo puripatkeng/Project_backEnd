@@ -2,11 +2,6 @@ const mongoose = require("mongoose");
 ("use strict");
 const mongooseDateFormat = require("mongoose-date-format-v2");
 
-const options = {
-  page: 1,
-  limit: 3,
-  totalPages: 2,
-};
 const activitiesSchema = new mongoose.Schema(
   {
     id: { type: String },
@@ -16,8 +11,8 @@ const activitiesSchema = new mongoose.Schema(
       required: true,
     },
     date: { type: Date, required: true },
-    durations: { type: Number, min: 0, required: true },
-    calories: { type: Number, min: 0, required: true },
+    durations: { type: Number, min: [0, 'Duration must be at least 0'], required: true },
+    calories: { type: Number, min: [0, 'Duration must be at least 0'], required: true },
     note: { type: String, max: 100 },
   },
   { timestamps: true }

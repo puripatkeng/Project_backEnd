@@ -4,6 +4,7 @@ const User = require("../model/user");
 const authSession = async (req, res, next) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
+    console.log(token);
 
     const decoded = jwt.verify(token, "qwerty", (err, decoded) => {
       if (err) {
@@ -12,7 +13,7 @@ const authSession = async (req, res, next) => {
       return decoded;
     });
 
-    // console.log(decoded);
+    console.log(decoded);
     if (!decoded.userId)
       return res.status(401).send("You are not authenticated");
 

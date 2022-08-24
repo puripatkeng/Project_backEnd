@@ -2,11 +2,13 @@ const User = require("../model/user");
 
 const { v4: uid } = require("uuid");
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   try {
-    const { username, password, name } = req.body;
+    const { username, password } = req.body;
+    // const { username, password, name } = req.body;
 
-    const userData = { user_id: uid(), username, password, name };
+    // const userData = { user_id: uid(), username, password, name };
+    const userData = { user_id: uid(), username, password };
 
     const newUser = new User(userData);
 
