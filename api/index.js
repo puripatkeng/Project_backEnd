@@ -18,11 +18,11 @@ app.use(bodyParser.json());
 // CORS
 app.use(
   cors(
-//     {
-//     origin: "https://project-front-end-kappa.vercel.app",
-//     credentials: true,
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//   }
+    {
+    origin: "https://project-front-end-kappa.vercel.app",
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }
   )
 );
 
