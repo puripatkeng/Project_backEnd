@@ -8,7 +8,13 @@ const cookieParser = require("cookie-parser");
 
 if (config.isVercel) {
   app.use(async (req, res, next) => {
-    await mongoose.connect(config.mongoUri, config.mongoOptions);
+    await mongoose.connect(config.mongodb.uri, {
+      user: config.mongodb.username,
+      pass: config.mongodb.password,
+      dbName: config.mongodb.dbName,
+      retryWrites: true,
+    });
+
     return next();
   });
 }
