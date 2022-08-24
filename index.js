@@ -1,30 +1,15 @@
-require("dotenv").config();
-const cors = require("cors");
-const express = require("express");
-const app = express();
-const bodyParser = require("body-parser");
-const controllerMongoose = require("./src/controller/mongoose-controller");
-const cookieParser = require("cookie-parser");
-// const session = require("express-session");
-const corsOptions = {
-  origin: "*",
-  optionsSuccessStatus: 200,
-  credentials: true,
+const mongoose = require("mongoose");
+const app = require("./api/index");
+
+const config = require("./config");
+
+const boot = async () => {
+  // Connect to mongodb
+  await mongoose.connect(config.mongoUri, config.mongoOptions);
+  // Start express server
+  app.listen(config.port, () => {
+    console.log(`Server is listening on port ${config.port}`);
+  });
 };
-const routerIndex = require("./routerIndex");
 
-app.use(bodyParser.json()); // for parsing application/json
-app.use(cors(corsOptions));
-app.use(cookieParser());
-
-app.use(controllerMongoose.connectMongoose);
-app.use(routerIndex);
-
-// app.get("/", (req, res, next) => {
-//   res.send(req.cookies);
-// });
-// const authSession = require("./src/middlewares/authSession");
-
-app.listen(process.env.PORT, () => {
-  console.log(`Server is listening on port ${process.env.PORT}`);
-});
+boot();
