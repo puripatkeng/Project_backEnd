@@ -17,11 +17,13 @@ if (config.isVercel) {
 app.use(bodyParser.json());
 // CORS
 app.use(
-  cors({
-    origin: "https://project-front-end-kappa.vercel.app",
-    credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
+  cors(
+//     {
+//     origin: "https://project-front-end-kappa.vercel.app",
+//     credentials: true,
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   }
+  )
 );
 
 app.use("/api", routerIndex);
