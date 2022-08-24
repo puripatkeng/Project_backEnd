@@ -1,14 +1,15 @@
 require('dotenv').config();
 
-module.exports = {
+const config = {
   isVercel: process.env.IS_VERCEL || false,
-  port: process.env.PORT || 4001,
-  mongoUri: process.env.MONGO_URI,
-  mongoOptions: {
+  port: +process.env.PORT || 8080,
+  mongodb: {
+    uri: process.env.MONGO_URI,
     user: process.env.MONGO_USER,
     pass: process.env.MONGO_PASSWORD,
     dbName: process.env.MONGO_DATABASE,
-    retryWrites: true,
-    w: 'majority',
+    
   },
 };
+
+module.exports = config;
