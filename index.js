@@ -1,25 +1,16 @@
-require("dotenv").config();
-const cors = require("cors");
 const express = require("express");
-const app = express();
-const bodyParser = require("body-parser");
-const controllerMongoose = require("./src/controller/mongoose-controller");
-const cookieParser = require("cookie-parser");
+const mongoose = require("mongoose");
+const app = require("./api/index.js");
+const config = require("./config");
 
-const corsOptions = {
-  origin: "*",
-  optionsSuccessStatus: 200,
-  credentials: true,
+const boot = async () => {
+  await mongoose
+    .connect(await mongoose.connect(config.mongoUri, config.mongoOptions))
+    .then(() => app.listen(8080))
+    .then(() =>
+      console.log("Connected TO Database and Listening TO Localhost 8080")
+    )
+    .catch((err) => console.log(err));
 };
-const routerIndex = require("./routerIndex");
 
-app.use(bodyParser.json());
-app.use(cors(corsOptions));
-app.use(cookieParser());
-
-app.use(controllerMongoose.connectMongoose);
-app.use(routerIndex);
-
-app.listen(process.env.PORT, () => {
-  console.log(`Server is listening on port ${process.env.PORT}`);
-});
+boot();

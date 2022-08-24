@@ -1,20 +1,21 @@
-const cors = require("cors");
 const express = require("express");
-const app = express();
+const cors = require("cors");
 const bodyParser = require("body-parser");
-const controllerMongoose = require("./src/controller/mongoose-controller");
-const cookieParser = require("cookie-parser");
+const mongoose = require("mongoose");
+const routerIndex = require("../routerIndex");
+const config = require("../config");
 
-const corsOptions = {
-  origin: "*",
-  optionsSuccessStatus: 200,
-  credentials: true,
-};
-const routerIndex = require("./routerIndex");
+const app = express();
 
+if (config.isVercel) {
+  app.use(async (req, res, next) => {
+    await mongoose.connect(config.mongoUri, config.mongoOptions);
+    return next();
+  });
+}
+
+app.use(cors());
 app.use(bodyParser.json());
-app.use(cors(corsOptions));
-app.use(cookieParser());
-
-app.use(controllerMongoose.connectMongoose);
 app.use(routerIndex);
+
+module.exports = app;
