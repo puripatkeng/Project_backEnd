@@ -16,6 +16,6 @@ if (config.isVercel) {
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(routerIndex);
+app.use("/api",routerIndex);
 
 module.exports = app;
