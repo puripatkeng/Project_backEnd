@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const routerIndex = require("../routerIndex");
 const config = require("../config");
 
-
 const app = express();
 
 if (config.isVercel) {
@@ -20,7 +19,8 @@ app.use(bodyParser.json());
 app.use(
   cors({
     origin: "https://project-front-end-kappa.vercel.app/",
-    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
