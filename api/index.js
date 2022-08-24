@@ -1,28 +1,21 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
+require("dotenv").config();
 const cors = require("cors");
-const config = require("../config");
+const express = require("express");
 const app = express();
-const routerIndex = require("../routerIndex");
+const bodyParser = require("body-parser");
+const controllerMongoose = require("./src/controller/mongoose-controller");
 const cookieParser = require("cookie-parser");
+// const session = require("express-session");
+const corsOptions = {
+  origin: "*",
+  optionsSuccessStatus: 200,
+  credentials: true,
+};
+const routerIndex = require("./routerIndex");
 
-if (config.isVercel) {
-  app.use(async (req, res, next) => {
-    await mongoose.connect(config.mongodb.uri, {
-      user: config.mongodb.username,
-      pass: config.mongodb.password,
-      dbName: config.mongodb.dbName,
-      retryWrites: true,
-    });
-
-    return next();
-  });
-}
-
-app.use(bodyParser.json());
-app.use(cors());
+app.use(bodyParser.json()); // for parsing application/json
+app.use(cors(corsOptions));
 app.use(cookieParser());
-app.use(routerIndex);
 
-module.exports = app;
+app.use(controllerMongoose.connectMongoose);
+app.use(routerIndex);
