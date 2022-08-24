@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const routerIndex = require("../routerIndex");
 const config = require("../config");
 
+
 const app = express();
 
 if (config.isVercel) {
@@ -13,9 +14,16 @@ if (config.isVercel) {
     return next();
   });
 }
-
-app.use(cors());
+// Body parser to parse json in request body for us
 app.use(bodyParser.json());
-app.use("/api",routerIndex);
+// CORS
+app.use(
+  cors({
+    origin: "*",
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  })
+);
+
+app.use("/api", routerIndex);
 
 module.exports = app;
